@@ -12,15 +12,16 @@ import { workoutData, exerciseData } from "@/data/workoutData";
 import exerciseDetails from "@/data/exerciseDetails";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import { Sidebar } from "@/components/Sidebar";
 
 const DailyWorkout = () => {
   const { workoutId } = useParams<{ workoutId?: string }>();
-  const [workout, setWorkout] = useState(workoutData.monday);
+  const [workout, setWorkout] = useState<typeof workoutData[keyof typeof workoutData]>(workoutData.monday);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
-  const [filter, setFilter] = useState<string>('all');
+  const [filter, setFilter] = useState<'all' | 'strength' | 'cardio' | 'flexibility'>('all');
   const [showDetails, setShowDetails] = useState<boolean>(false);
-  const [showSidebar, setShowSidebar] = useState<boolean>(true);
+  const [showSidebar, setShowSidebar] = useState<boolean>(window.innerWidth >= 768);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -42,6 +43,7 @@ const DailyWorkout = () => {
   useEffect(() => {
     // Update completed exercises count from localStorage
     const completedExercisesFromStorage = JSON.parse(localStorage.getItem('completedExercises') || '[]');
+    const workoutCompletions = JSON.parse(localStorage.getItem('workout_completions') || '{}');
     
     const updatedExercises = exercises.map(ex => ({
       ...ex,
@@ -49,7 +51,29 @@ const DailyWorkout = () => {
     }));
     
     setExercises(updatedExercises);
-  }, [exercises]);
+
+    // Update workout completion status
+    if (workoutId && exercises.length > 0) {
+      const allCompleted = updatedExercises.every(ex => ex.completed);
+      if (allCompleted) {
+        const today = new Date().toISOString().split('T')[0];
+        workoutCompletions[workoutId] = today;
+        localStorage.setItem('workout_completions', JSON.stringify(workoutCompletions));
+        
+        // Update streak
+        const streak = parseInt(localStorage.getItem('workout_streak') || '0', 10);
+        const lastWorkoutDate = Object.values(workoutCompletions).sort().pop();
+        
+        if (lastWorkoutDate) {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const isConsecutive = lastWorkoutDate === yesterday.toISOString().split('T')[0];
+          
+          localStorage.setItem('workout_streak', isConsecutive ? (streak + 1).toString() : '1');
+        }
+      }
+    }
+  }, [exercises, workoutId]);
 
   useEffect(() => {
     if (filter === 'all') {
@@ -83,7 +107,7 @@ const DailyWorkout = () => {
     toast({
       title: "Workout Completed",
       description: "All exercises have been marked as completed!",
-      variant: "success",
+      variant: "default",
     });
   };
 
@@ -97,7 +121,16 @@ const DailyWorkout = () => {
       
       <div className="flex">
         {/* Main Content */}
-        <main className={`page-container animate-fade-in pb-20 ${showSidebar ? 'md:ml-72' : 'ml-0'} transition-all duration-300 flex-1`}>
+        <main className="page-container animate-fade-in pb-20 flex-1">
+          <Sidebar
+            workoutId={workoutId}
+            totalExercises={totalExercises}
+            completedExercises={completedExercises}
+            showTimer
+            showNotes
+            isVisible={showSidebar}
+            onToggle={toggleSidebar}
+          />
           {/* Header Section */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">

@@ -86,6 +86,60 @@ const mondayExercises: Exercise[] = [
   }
 ];
 
+// Day 3: Core & Cardio
+const wednesdayExercises: Exercise[] = [
+  {
+    id: "plank",
+    title: "Plank Hold",
+    duration: 5,
+    sets: 3,
+    reps: 1,
+    type: "strength",
+    imageUrl: "https://images.unsplash.com/photo-1566241142559-40e1742168f9?q=80&w=800&auto=format&fit=crop",
+    completed: false
+  },
+  {
+    id: "mountain-climbers",
+    title: "Mountain Climbers",
+    duration: 8,
+    sets: 3,
+    reps: 30,
+    type: "cardio",
+    imageUrl: "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?q=80&w=800&auto=format&fit=crop",
+    completed: false
+  },
+  {
+    id: "russian-twists",
+    title: "Russian Twists",
+    duration: 6,
+    sets: 3,
+    reps: 20,
+    type: "strength",
+    imageUrl: "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?q=80&w=800&auto=format&fit=crop",
+    completed: false
+  },
+  {
+    id: "burpees",
+    title: "Burpees",
+    duration: 10,
+    sets: 4,
+    reps: 15,
+    type: "cardio",
+    imageUrl: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=800&auto=format&fit=crop",
+    completed: false
+  },
+  {
+    id: "bicycle-crunches",
+    title: "Bicycle Crunches",
+    duration: 8,
+    sets: 3,
+    reps: 30,
+    type: "strength",
+    imageUrl: "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?q=80&w=800&auto=format&fit=crop",
+    completed: false
+  }
+];
+
 // Day 2: Back & Biceps
 const tuesdayExercises: Exercise[] = [
   {
@@ -171,7 +225,7 @@ const tuesdayExercises: Exercise[] = [
 ];
 
 // Day 3: Legs
-const wednesdayExercises: Exercise[] = [
+const legsExercises: Exercise[] = [
   {
     id: "squats",
     title: "Barbell Squats",
@@ -573,12 +627,22 @@ export const workoutData: Record<string, Workout> = {
   },
   wednesday: {
     id: "wednesday",
-    title: "Legs",
+    title: "Core & Cardio",
     day: "Wednesday",
-    description: "Build strength in your legs with compound movements and isolation exercises.",
+    description: "High intensity interval training focused on your core and cardiovascular system.",
     duration: wednesdayExercises.reduce((total, ex) => total + ex.duration, 0),
     exerciseCount: wednesdayExercises.length,
     completedExercises: wednesdayExercises.filter(ex => ex.completed).length,
+    imageUrl: "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?q=80&w=800&auto=format&fit=crop"
+  },
+  legs: {
+    id: "legs",
+    title: "Legs",
+    day: "Legs Day",
+    description: "Build strength in your legs with compound movements and isolation exercises.",
+    duration: legsExercises.reduce((total, ex) => total + ex.duration, 0),
+    exerciseCount: legsExercises.length,
+    completedExercises: legsExercises.filter(ex => ex.completed).length,
     imageUrl: "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?q=80&w=800&auto=format&fit=crop"
   },
   thursday: {
@@ -627,6 +691,7 @@ export const exerciseData: Record<string, Exercise[]> = {
   monday: mondayExercises,
   tuesday: tuesdayExercises,
   wednesday: wednesdayExercises,
+  legs: legsExercises,
   thursday: thursdayExercises,
   friday: fridayExercises,
   saturday: saturdayExercises,

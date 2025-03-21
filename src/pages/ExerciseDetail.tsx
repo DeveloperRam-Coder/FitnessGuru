@@ -17,8 +17,12 @@ import {
   CheckCircle, 
   XCircle,
   Clipboard,
-  Timer
+  Timer,
+  Pause,
+  RotateCcw,
+  ListFilter
 } from "lucide-react";
+import { Sidebar } from "@/components/Sidebar";
 
 import exerciseDetails from "@/data/exerciseDetails";
 import { workoutData } from "@/data/workoutData";
@@ -55,10 +59,10 @@ export default function ExerciseDetail() {
   }, [exerciseId, workoutId]);
 
   useEffect(() => {
-    let interval: number | undefined;
+    let interval: NodeJS.Timeout | undefined;
     
     if (timerRunning && timerSeconds > 0) {
-      interval = window.setInterval(() => {
+      interval = setInterval(() => {
         setTimerSeconds(prevSeconds => {
           const newSeconds = prevSeconds - 1;
           
@@ -73,13 +77,10 @@ export default function ExerciseDetail() {
           return newSeconds;
         });
       }, 1000);
+
+      // Cleanup interval when component unmounts or timerRunning changes
+      return () => clearInterval(interval);
     }
-    
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
   }, [timerRunning, timerSeconds, toast]);
 
   const handleToggleComplete = () => {
@@ -161,7 +162,17 @@ export default function ExerciseDetail() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Navbar />
       
-      <main className="page-container animate-fade-in pb-20">
+      <div className="flex">
+        <main className="page-container animate-fade-in pb-20 flex-1">
+          <Sidebar
+            workoutId={workoutId}
+            totalExercises={1}
+            completedExercises={completed ? 1 : 0}
+            showTimer
+            showNotes
+            isVisible={true}
+          />
+
         {/* Header */}
         <div className="mb-8">
           <Link 
@@ -424,5 +435,6 @@ export default function ExerciseDetail() {
         </div>
       </main>
     </div>
-  );
+  </div>
+);
 }

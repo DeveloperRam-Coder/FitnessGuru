@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { Exercise } from "@/components/ExerciseCard";
 
 interface ExerciseProgressTrackerProps {
   exerciseId: string;
   exerciseType: "strength" | "cardio" | "flexibility";
   className?: string;
+  exercise?: Exercise;
 }
 
 interface ProgressEntry {
