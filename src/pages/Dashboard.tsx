@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { ExerciseCard, Exercise } from "@/components/ExerciseCard";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Calendar, BarChart2, Award, Heart, Clock, Dumbbell, CheckCircle } from "lucide-react";
+import { exerciseDetails } from "@/data/exerciseDetails";
 
 // Mock data for workouts and exercises
 const mockExercises = {
@@ -83,13 +84,47 @@ const Dashboard = () => {
   useEffect(() => {
     // Load favorite exercises from local storage
     const storedFavorites = JSON.parse(localStorage.getItem('favoriteExercises') || '[]');
-    const favExercises = storedFavorites.map((id: string) => mockExercises[id as keyof typeof mockExercises]).filter(Boolean);
+    const favExercises = storedFavorites
+      .map((id: string) => {
+        const exercise = exerciseDetails[id];
+        if (!exercise) return null;
+        return {
+          id: exercise.id,
+          title: exercise.title,
+          duration: exercise.duration,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          type: exercise.type,
+          imageUrl: exercise.thumbnailUrl,
+          completed: exercise.completed
+        } as Exercise;
+      })
+      .filter(Boolean);
     setFavoriteExercises(favExercises);
 
     // Load completed exercises from local storage
     const storedCompleted = JSON.parse(localStorage.getItem('completedExercises') || '[]');
-    const compExercises = storedCompleted.map((id: string) => mockExercises[id as keyof typeof mockExercises]).filter(Boolean);
+    const compExercises = storedCompleted
+      .map((id: string) => {
+        const exercise = exerciseDetails[id];
+        if (!exercise) return null;
+        return {
+          id: exercise.id,
+          title: exercise.title,
+          duration: exercise.duration,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          type: exercise.type,
+          imageUrl: exercise.thumbnailUrl,
+          completed: exercise.completed
+        } as Exercise;
+      })
+      .filter(Boolean);
     setCompletedExercises(compExercises);
+
+    // Load workout completions and streak
+    const workoutCompletions = JSON.parse(localStorage.getItem('workout_completions') || '{}');
+    const streak = parseInt(localStorage.getItem('workout_streak') || '0', 10);
 
     // Calculate progress metrics
     const completed = storedCompleted.length;
@@ -98,7 +133,7 @@ const Dashboard = () => {
     setWeeklyProgress({
       completed,
       total: 35,
-      streak: 2,
+      streak,
       minutesCompleted,
     });
   }, []);
@@ -198,7 +233,7 @@ const Dashboard = () => {
                 >
                   <ExerciseCard 
                     exercise={exercise} 
-                    workoutId="monday" // Default workout ID
+                    workoutId={exercise.id.split('-')[0]} // Extract workout ID from exercise ID
                   />
                 </div>
               ))}
@@ -230,7 +265,7 @@ const Dashboard = () => {
                 >
                   <ExerciseCard 
                     exercise={exercise} 
-                    workoutId="monday" // Default workout ID
+                    workoutId={exercise.id.split('-')[0]} // Extract workout ID from exercise ID
                   />
                 </div>
               ))}

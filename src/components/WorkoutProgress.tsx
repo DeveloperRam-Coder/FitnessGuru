@@ -24,9 +24,18 @@ export function WorkoutProgress({
     // Load streak and total workouts completed from localStorage
     const streak = parseInt(localStorage.getItem('workout_streak') || '0', 10);
     const totalCompleted = parseInt(localStorage.getItem('total_workouts_completed') || '0', 10);
+    const workoutCompletions = JSON.parse(localStorage.getItem('workout_completions') || '{}');
     
     setStreakCount(streak);
     setTotalWorkoutsCompleted(totalCompleted);
+    
+    // Check if workout was already completed today
+    const today = new Date().toISOString().split('T')[0];
+    if (workoutCompletions[workoutId] === today) {
+      // Update UI immediately if workout was already completed today
+      setStreakCount(streak);
+      setTotalWorkoutsCompleted(totalCompleted);
+    }
     
     // Update stats if this workout is completed
     if (completedExercises === totalExercises && totalExercises > 0) {
